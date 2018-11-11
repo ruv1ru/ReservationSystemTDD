@@ -17,7 +17,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Single(reservations);
             Assert.Equal( "Jack", reservations[0].Customer.Name);
@@ -37,7 +37,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Null(reservations);
 
@@ -55,7 +55,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Null(reservations);
 
@@ -75,7 +75,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Null(reservations);
 
@@ -93,7 +93,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Null(reservations);
 
@@ -115,7 +115,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Equal(2, reservations[0].Customer.NumberOfPeople);
             Assert.Equal("Jane", reservations[0].Customer.Name);
@@ -139,7 +139,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Equal(1, reservations[0].Table.SeatCount);
 
@@ -165,7 +165,7 @@ namespace ReservationSystemTests
 
             var restaurant = new Restaurant(customers, tables);
 
-            var reservations = restaurant.Reserve();
+            var reservations = restaurant.MakeReservations();
 
             Assert.Collection(reservations, reservation => Assert.Equal(4, reservation.Customer.NumberOfPeople),
                               reservation => Assert.Equal(3, reservation.Customer.NumberOfPeople));

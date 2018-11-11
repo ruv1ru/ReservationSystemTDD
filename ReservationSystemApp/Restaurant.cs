@@ -5,8 +5,8 @@ namespace ReservationSystemApp
 {
     public class Restaurant
     {
-        List<Customer> Customers;
-        List<Table> Tables;
+        readonly List<Customer> Customers;
+        readonly List<Table> Tables;
 
 
         public Restaurant(List<Customer> customers, List<Table> tables)
@@ -15,48 +15,40 @@ namespace ReservationSystemApp
             Tables = tables;
         }
 
-
-        public List<Reservation> Reserve()
+        bool UnableToMakeReservations()
         {
-            if(Customers == null || Customers.Count == 0 || Tables == null || Tables.Count == 0)
-            {
-                return null;
-            }
+            return Customers == null || Customers.Count == 0 || Tables == null || Tables.Count == 0;
+        }
 
-            if(Customers.Count == 1 && Tables.Count == 1)
-            {
-
-                if(Tables[0].SeatCount >= Customers[0].NumberOfPeople)
-                {
-                    return new List<Reservation> { new Reservation { Customer = Customers[0], Table = Tables[0] } };
-                }
-
-                return null;
-
-            }
-
-
-            if(Tables.Count == 1)
-            {
-                var customerWithMaxNoOfPeople = GetCustomerWithLargestGroup();
-
-                if(Tables[0].SeatCount >= customerWithMaxNoOfPeople.NumberOfPeople)
-                {
-                    return new List<Reservation> { new Reservation { Customer = customerWithMaxNoOfPeople, Table = Tables[0] } };
-                }
-
-            }
-            else if (Customers.Count == 1)
-            {
-                return new List<Reservation> { new Reservation { Customer = Customers[0], Table = GetSmallestTableForCustomer(Customers[0]) } };
-            }
-
-            var reservations = new List<Reservation>();
-
+        void SortCustomersByNoOfPeopleDesceding()
+        {
             Customers.Sort(delegate (Customer x, Customer y)
             {
                 return -1 * x.NumberOfPeople.CompareTo(y.NumberOfPeople);
             });
+        }
+
+        void SortTablesBySeatCount()
+        {
+            Tables.Sort(delegate (Table x, Table y)
+            {
+                return x.SeatCount.CompareTo(y.SeatCount);
+            });
+        }
+
+        Reservation MakeReservation(Customer customer, Table table)
+        {
+            return new Reservation { Customer = customer, Table = table };
+        }
+
+        public List<Reservation> MakeReservations()
+        {
+            if (UnableToMakeReservations()) return null;
+
+            SortCustomersByNoOfPeopleDesceding();
+            SortTablesBySeatCount();
+
+            var reservations = new List<Reservation>();
 
             foreach (var customer in Customers)
             {
@@ -65,26 +57,22 @@ namespace ReservationSystemApp
                     break;
                 }
 
-                var bestTableForCustomer = GetSmallestTableForCustomer(customer);
-                if(bestTableForCustomer == null)
+                var optimalTableForCustomer = GetOptimalTableForCustomer(customer);
+
+                if(optimalTableForCustomer == null)
                 {
                     continue;
                 }
 
-                reservations.Add(new Reservation { Customer = customer, Table = bestTableForCustomer });
+                reservations.Add(MakeReservation(customer, optimalTableForCustomer));
             }
 
             return reservations;
 
         }
 
-        Table GetSmallestTableForCustomer(Customer customer)
+        Table GetOptimalTableForCustomer(Customer customer)
         {
-            Tables.Sort(delegate (Table x, Table y)
-            {
-                return x.SeatCount.CompareTo(y.SeatCount);
-            });
-
             foreach (var table in Tables)
             {
                 if (table.SeatCount >= customer.NumberOfPeople)
@@ -102,11 +90,13 @@ namespace ReservationSystemApp
 
             foreach (var customer in Customers)
             {
-                if (customer.NumberOfPeople > maxNoOfPeople)
+                if(customer.NumberOfPeople <= maxNoOfPeople)
                 {
-                    maxNoOfPeople = customer.NumberOfPeople;
-                    customerWithLargestGroup = customer;
+                    continue;
                 }
+
+                maxNoOfPeople = customer.NumberOfPeople;
+                customerWithLargestGroup = customer;
             }
             return customerWithLargestGroup;
         }
