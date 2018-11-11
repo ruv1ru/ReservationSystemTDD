@@ -38,7 +38,7 @@ namespace ReservationSystemApp
 
             if(Tables.Count == 1)
             {
-                var customerWithMaxNoOfPeople = GetCustomerWithMaxNoOfPeople();
+                var customerWithMaxNoOfPeople = GetCustomerWithLargestGroup();
 
                 if(Tables[0].SeatCount >= customerWithMaxNoOfPeople.NumberOfPeople)
                 {
@@ -51,7 +51,30 @@ namespace ReservationSystemApp
                 return new List<Reservation> { new Reservation { Customer = Customers[0], Table = GetSmallestTableForCustomer(Customers[0]) } };
             }
 
-            return null;
+            var reservations = new List<Reservation>();
+
+            Customers.Sort(delegate (Customer x, Customer y)
+            {
+                return -1 * x.NumberOfPeople.CompareTo(y.NumberOfPeople);
+            });
+
+            foreach (var customer in Customers)
+            {
+                if(reservations.Count == Tables.Count)
+                {
+                    break;
+                }
+
+                var bestTableForCustomer = GetSmallestTableForCustomer(customer);
+                if(bestTableForCustomer == null)
+                {
+                    continue;
+                }
+
+                reservations.Add(new Reservation { Customer = customer, Table = bestTableForCustomer });
+            }
+
+            return reservations;
 
         }
 
@@ -72,9 +95,9 @@ namespace ReservationSystemApp
             return null;
         }
 
-        Customer GetCustomerWithMaxNoOfPeople()
+        Customer GetCustomerWithLargestGroup()
         {
-            Customer customerWithMaxNoOfPeople = null;
+            Customer customerWithLargestGroup = null;
             var maxNoOfPeople = Int32.MinValue;
 
             foreach (var customer in Customers)
@@ -82,10 +105,10 @@ namespace ReservationSystemApp
                 if (customer.NumberOfPeople > maxNoOfPeople)
                 {
                     maxNoOfPeople = customer.NumberOfPeople;
-                    customerWithMaxNoOfPeople = customer;
+                    customerWithLargestGroup = customer;
                 }
             }
-            return customerWithMaxNoOfPeople;
+            return customerWithLargestGroup;
         }
     }
 }

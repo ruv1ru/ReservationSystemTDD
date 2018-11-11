@@ -145,6 +145,35 @@ namespace ReservationSystemTests
 
         }
 
+        [Fact]
+        public void GetReservationForMultipleCustomers_ShouldReturnReservationsForLargestGroups()
+        {
+
+            var customers = new List<Customer>
+            {
+                new Customer { Name = "Jack", NumberOfPeople = 2 },
+                new Customer { Name = "Jane", NumberOfPeople = 4 },
+                new Customer { Name = "Tina", NumberOfPeople = 3 },
+
+            };
+
+            var tables = new List<Table>
+            {
+                new Table { Number = 1, SeatCount = 3 },
+                new Table { Number = 2, SeatCount = 4 }
+            };
+
+            var restaurant = new Restaurant(customers, tables);
+
+            var reservations = restaurant.Reserve();
+
+            Assert.Collection(reservations, reservation => Assert.Equal(4, reservation.Customer.NumberOfPeople),
+                              reservation => Assert.Equal(3, reservation.Customer.NumberOfPeople));
+
+
+
+        }
+
 
     }
 }
