@@ -14,16 +14,15 @@ namespace ReservationSystemTests
 
             var tables = new List<Table> { new Table { Number = 1, SeatCount = 1 } };
 
-
             var restaurant = new Restaurant(customers, tables);
 
             var reservations = restaurant.MakeReservations();
 
             Assert.Single(reservations);
-            Assert.Equal( "Jack", reservations[0].Customer.Name);
-            Assert.Equal(1, reservations[0].Customer.NumberOfPeople);
-            Assert.Equal(1, reservations[0].Table.SeatCount);
 
+            Assert.Collection(reservations, reservation => Assert.Equal("Jack", reservation.Customer.Name));
+            Assert.Collection(reservations, reservation => Assert.Equal(1, reservation.Customer.NumberOfPeople));
+            Assert.Collection(reservations, reservation => Assert.Equal(1, reservation.Table.SeatCount));
 
 
         }
@@ -117,8 +116,9 @@ namespace ReservationSystemTests
 
             var reservations = restaurant.MakeReservations();
 
-            Assert.Equal(2, reservations[0].Customer.NumberOfPeople);
-            Assert.Equal("Jane", reservations[0].Customer.Name);
+            Assert.Collection(reservations, reservation => Assert.Equal("Jane", reservation.Customer.Name));
+            Assert.Collection(reservations, reservation => Assert.Equal(2, reservation.Customer.NumberOfPeople));
+
 
         }
 
@@ -171,6 +171,31 @@ namespace ReservationSystemTests
                               reservation => Assert.Equal(3, reservation.Customer.NumberOfPeople));
 
 
+
+        }
+
+        [Fact]
+        public void GetReservationForCustomersWithAboveLimitGroup_ShouldNotReturnReservationsForAboveLimitGroup()
+        {
+
+            var customers = new List<Customer>
+            {
+                new Customer { Name = "Jack", NumberOfPeople = 7 },
+                new Customer { Name = "Jane", NumberOfPeople = 2 },
+                new Customer { Name = "Jina", NumberOfPeople = 1 }
+
+            };
+
+            var tables = new List<Table>
+            {
+                new Table { Number = 1, SeatCount = 6 }
+            };
+
+            var restaurant = new Restaurant(customers, tables);
+
+            var reservations = restaurant.MakeReservations();
+
+            Assert.Collection(reservations, reservation => Assert.NotEqual(7, reservation.Customer.NumberOfPeople));
 
         }
 

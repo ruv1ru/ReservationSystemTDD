@@ -4,6 +4,6 @@ namespace ReservationSystemApp
     public class Table
     {
         public int Number { get; set; }
-        public int SeatCount { get; set; }
+        public int SeatCount { get; set; } // Assumption: seat count <= 6
     }
 }
